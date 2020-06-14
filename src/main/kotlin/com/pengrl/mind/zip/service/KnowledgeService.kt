@@ -34,6 +34,6 @@ class KnowledgeServiceMutation(val knowledgeMapper: KnowledgeMapper) : Mutation 
     fun addKnowledge(knowledge: KnowledgeDTO): Int {
         return knowledgeMapper.insert(Knowledge(question = knowledge.question,
                 answer = knowledge.answer,
-                hint = knowledge.hint))
+                hint = knowledge.hint, courseId = knowledge.courseId, courseName = knowledge.courseName))
     }
 }
