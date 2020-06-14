@@ -34,4 +34,8 @@ class CourseMutation(val courseMapper: CourseMapper) : Mutation {
     fun createCourse(course: CourseDTO) : Int {
         return courseMapper.insert(Course(name = course.name))
     }
+
+    fun updateCourse(course: CourseDTO) : Int {
+        return courseMapper.updateById(Course(id = course.id, name = course.name));
+    }
 }

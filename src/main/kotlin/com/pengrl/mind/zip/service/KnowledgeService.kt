@@ -4,7 +4,6 @@ import com.expediagroup.graphql.spring.operations.Mutation
 import com.expediagroup.graphql.spring.operations.Query
 import com.pengrl.mind.zip.mapper.KnowledgeMapper
 import com.pengrl.mind.zip.mapper.pojo.Knowledge
-import com.pengrl.mind.zip.service.dto.CourseDTO
 import com.pengrl.mind.zip.service.dto.KnowledgeDTO
 import org.springframework.stereotype.Component
 
@@ -27,9 +26,14 @@ class KnowledgeServiceQuery(val knowledgeMapper: KnowledgeMapper) : Query {
 
 @Component
 class KnowledgeServiceMutation(val knowledgeMapper: KnowledgeMapper) : Mutation {
-    fun updateKnowledge(knowledge: KnowledgeDTO): KnowledgeDTO {
-        knowledgeMapper.updateById(Knowledge(knowledge.id, knowledge.courseId, knowledge
+    fun updateKnowledge(knowledge: KnowledgeDTO): Int {
+        return knowledgeMapper.updateById(Knowledge(knowledge.id, knowledge.courseId, knowledge
                 .courseName, knowledge.question, knowledge.answer, knowledge.hint));
-        return knowledge;
+    }
+
+    fun addKnowledge(knowledge: KnowledgeDTO): Int {
+        return knowledgeMapper.insert(Knowledge(question = knowledge.question,
+                answer = knowledge.answer,
+                hint = knowledge.hint))
     }
 }
