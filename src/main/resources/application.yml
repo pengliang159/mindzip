@@ -4,6 +4,6 @@ spring:
   datasource:
     url: jdbc:mysql://118.31.43.206:3306/mindzip?useUnicode=true
     username: pengrl
-    password: mindzip-kotlin
+    password: mindzip-kotlin # aliyun-db-pass：root = pengrl@123.go
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource

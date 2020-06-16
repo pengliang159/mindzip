@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+</head>
+<style type="text/css">
+    body {
+        background-color: black;
+    }
+    form {
+        width: 100%;
+    }
+
+    select{
+        width: 100%;
+    }
+
+    textarea {
+        width: 100%;
+    }
+</style>
+<body>
+<div style="margin: 0 auto;width: 80%" id="app">
+    <form>
+        <select id="courseId">
+            <option v-for="c in courses" :value="c.id">{{c.name}}</option>
+        </select>
+        <textarea id="question" rows="15"></textarea>
+        <textarea id="answer" rows="15"></textarea>
+        <textarea id="hint" rows="10"></textarea>
+        <button type="button" @click="save" :disabled="saving">保存</button>
+    </form>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script>
+    const findAllCourse = '{\n'
+                          + '    findAllCourse(start: 0, first : 100) {\n'
+                          + '        id,\n'
+                          + '        name\n'
+                          + '    }\n'
+                          + '}'
+
+    const addKnowledge = 'mutation add($knowledge: KnowledgeDTOInput!){\n'
+                         + '    addKnowledge(knowledge: $knowledge)\n'
+                         + '}'
+
+    var courseMap = {}
+
+    new Vue({
+        el: '#app',
+        data: {
+            courses: [],
+            courseMap: {},
+            saving: false,
+        },
+        created() {
+            var _this = this
+            axios.post('/graphql', buildParam(findAllCourse)).then((data) => {
+                let result = data.data.data.findAllCourse
+                for (let ind = 0, len = result.length;ind < len;ind++) {
+                    let c = result[ind]
+                    courseMap[c.id] = c.name
+                }
+                _this.courses = result
+            });
+        },
+        methods:{
+            save(){
+                this.saving = true
+                let question = document.querySelector('#question').value
+                let answer = document.querySelector('#answer').value
+                let hint = document.querySelector('#hint').value
+                let courseId = document.querySelector('#courseId').value
+                if (!question || !answer) {
+                    alert('不能为空')
+                    return;
+                }
+                let obj = {"question":question, "answer": answer, "hint":hint, "courseId":courseId,
+                    "courseName": courseMap[courseId]}
+                console.log(obj)
+                axios.post('/graphql', buildParam(addKnowledge, {"knowledge":obj})).then((data) => {
+                    console.log("success")
+                    setTimeout(()=>{
+                        this.saving = false
+                        document.querySelector('#answer').value = ''
+                        document.querySelector('#hint').value = ''
+                    }, 5000)
+                });
+            }
+        }
+    })
+
+
+    function saveKnowledge() {
+        return true;
+    }
+
+    function buildParam(input, variables) {
+        return {"query": input, "variables": variables}
+    }
+</script>
+</body>
+</html>
